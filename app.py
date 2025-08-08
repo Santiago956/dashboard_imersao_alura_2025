@@ -4,7 +4,7 @@ import plotly.express as px
 import pycountry
 
 st.set_page_config(
-    page_title= 'Dashboard de Salários na Área de Dados',
+    page_title= 'Dashboard Salarial | Dados',
     page_icon= '📈',
     layout= 'wide'
 )
@@ -32,8 +32,8 @@ df_filtrado = df[
     (df['tamanho_empresa'].isin(tamanhos_selecionados))
 ]
 
-st.title("🎲 Dashboard de Análise de Salários na Área de Dados")
-st.markdown("Explore os dados salariais da área de dados nos ultimos anos. Utilize os filtros à esquerda para refinar a análise")
+st.title("Dashboard de Análise de Salários na Área de Dados")
+st.markdown("Utilize os filtros à esquerda para refinar a análise.")
 
 st.subheader("Métricas gerais (Salário anual em USD)")
 
@@ -46,10 +46,10 @@ else:
     salario_medio, salario_mediano, salario_maximo, total_registros, cargo_mais_comum = 0, 0, 0, ""
 
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("Salário médio", f"${salario_medio:,.0f}")
-col2.metric("Salário máximo", f"${salario_maximo:,.0f}")
-col3.metric("Total de registros", f"{total_registros:,}")
-col4.metric("Cargo mais frequente", cargo_mais_frequente)
+col1.metric("💰 Salário médio", f"${salario_medio:,.0f}")
+col2.metric("🚀 Salário máximo", f"${salario_maximo:,.0f}")
+col3.metric("📊 Total de registros", f"{total_registros:,}")
+col4.metric("👨‍💼 Cargo mais frequente", cargo_mais_frequente)
 
 st.markdown("---")
 
@@ -64,7 +64,8 @@ with col_graf1:
             y='cargo',
             orientation='h',
             title="Top 10 cargos por salário médio",
-            labels={'usd': 'Média salarial anual (USD)', 'cargo': ''}
+            labels={'usd': 'Média salarial anual (USD)', 'cargo': ''},
+            color_discrete_sequence=px.colors.qualitative.Vivid
         )
         grafico_cargos.update_layout(title_x=0.1, yaxis={'categoryorder':'total ascending'})
         st.plotly_chart(grafico_cargos, use_container_width=True)
@@ -78,7 +79,8 @@ with col_graf2:
             x='usd',
             nbins=30,
             title="Distribuição de salários anuais",
-            labels={'usd': 'Faixa salarial (USD)', 'count': ''}
+            labels={'usd': 'Faixa salarial (USD)', 'count': ''},
+            color_discrete_sequence=['#1f77b4']
         )
         grafico_hist.update_layout(title_x=0.1)
         st.plotly_chart(grafico_hist, use_container_width=True)
@@ -96,8 +98,10 @@ with col_graf3:
             names='tipo_trabalho',
             values='quantidade',
             title='Proporção dos tipos de trabalho',
-            hole=0.5  
-        )
+            hole=0.5,
+            color_discrete_sequence=px.colors.qualitative.Set3)
+
+
         grafico_remoto.update_traces(textinfo='percent+label')
         grafico_remoto.update_layout(title_x=0.1)
         st.plotly_chart(grafico_remoto, use_container_width=True)
@@ -120,6 +124,19 @@ with col_graf4:
         st.plotly_chart(grafico_mapa_salarial, use_container_width=True)
     else:
         st.warning("Nenhum dado para exibir no gráfico de países")
+
+salario_por_ano = df_filtrado.groupby('ano')['usd'].mean().reset_index()
+
+grafico_evolucao = px.line(
+    salario_por_ano,
+    x='ano',
+    y='usd',
+    title='Evolução da Média Salarial Anual',
+    markers=True,
+    labels={'ano': 'Ano', 'usd': 'Média Salarial Anual (USD)'}
+)
+
+st.plotly_chart(grafico_evolucao, use_container_width=True)
 
 st.subheader("Dados Detalhados")
 st.dataframe(df_filtrado)
