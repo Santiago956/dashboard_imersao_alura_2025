@@ -116,7 +116,7 @@ with col_graf4:
             media_salarial_ds,
             locations='iso_alpha',
             color='usd',
-            color_continuous_scale='rdylgn',
+            color_continuous_scale='ylgnbu',
             labels={'usd':'Salário Médio (USD)', 'iso_alpha': 'País'},
             title='Média Salarial de Cientistas de Dados por país'
         )
